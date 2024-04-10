@@ -14,38 +14,31 @@ function App() {
   const generateqrcode = async(e) => {
     e.preventDefault();
     // const hash = await genHash(data)
-    console.log(data, format, size, bgcolor);
-    if (data && format && size && bgcolor) {
-      const code = await fetch(
-        `http(s)://api.qrserver.com/v1/create-qr-code/?data=${data}&size=${size}x${size}&bgcolor=${bgcolor}&color=${color}`
-      );
-      setGenqrcode(code)
+    console.log(data, format, size, bgcolor, color);
+    try{
+      if (data && format && size && bgcolor) {
+        console.log(data, format, size, bgcolor, color);
+        const url = `https://api.qrserver.com/v1/create-qr-code/?data=${data}&size=${size}x${size}&bgcolor=${bgcolor}&color=${color}`
+        // const code = await fetch(url);
+        setGenqrcode(url)
+      }
+    }catch(error){
+      alert(`Error generating code: ${error}`)
     }
+    
   };
 
-  // async function genHash(data){
-  //   const NO_OF_ROUND = 3;
-  //   const salt = await bcrypt.genSalt(NO_OF_ROUND);
-  //   const hash = await bcrypt.hash(data,salt);
-  //   console.log(salt);
-  //   console.log(hash);
-  //   return hash;
-  // }
 
   const colors = [
+    {},
+    { name: "white", value: "255-255-255" },
     { name: "green", value: "0-255-0" },
     { name: "blue", value: "0-0-255" },
     { name: "skyblue", value: "135-206-235" },
     { name: "orange", value: "255-165-0" },
     { name: "yellow", value: "255-255-0" },
     { name: "yellowgreen", value: "154-205-50" },
-    { name: "white", value: "255-255-255" },
     { name: "black", value: "0-0-0" },
-  ];
-  const formats = [
-    { name: "PNG", value: "PNG" },
-    { name: "JPEG", value: "JPG" },
-    { name: "SVG", value: "SVG" },
   ];
 
   const sizes = [
@@ -55,16 +48,43 @@ function App() {
     { name: " 800px x 800px ", value: "800" },
   ];
 
+  const download = async() => {
+    // console.log ("hi")
+    try{
+      await fetch (genqrcode)
+      .then((res)=>res.blob())
+      .then((blob)=>{
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "qrcode.png";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      })
+    }catch(error){
+      console.log("error in downloading", error)
+    }
+  }
+
   return (
     <div className="app">
-      <div>
+      {/* <div className="fullbox"> */}
         <h1>QR code generator</h1>
-        <p>
-          Generate your QR code in a customized way and download in any format
+        <p className="subtitle">
+          Generate your QR code in a customized way and download it
           for further use
         </p>
-      </div>
-      <form>
+      {genqrcode? <div className="qrcode">
+        {console.log(genqrcode)}
+        <img
+          src={genqrcode}
+          alt="qr code generated"
+          aria-label="generated qr code"
+        />
+        <button onClick={()=>download()}>Download QR code</button>
+      </div> : null
+}
+      <form onSubmit={(e) => generateqrcode(e)} className="clsform">
         <div className="box">
           <input
             type="text"
@@ -73,20 +93,7 @@ function App() {
           /><br/>
           <p className="vsmall">This field is mandatory</p>
         </div>
-        <div className="box">
-          <p className="label">Select the QR Code format</p>
-          <select
-            className="dropdown"
-            name="format"
-            onChange={(e) => setFormat(e.target.value)}
-          >
-            {formats.map((f, index) => (
-              <option value={f.value} key={index} className="opt">
-                {f.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        
         <div className="box">
           <p className="label">Select the QR Code size</p>
           <select
@@ -101,6 +108,7 @@ function App() {
             ))}
           </select>
         </div>
+        <p className="vsmall">Defalut color is black and white</p>
         <div className="box">
           <p className="label">Select the QR Code background colour</p>
           <select
@@ -119,7 +127,7 @@ function App() {
           <p className="label">Select the color of the qr code</p>
           <select
             className="dropdown"
-            name="bgcolor"
+            name="color"
             onChange={(e) => setColor(e.target.value)}
           >
             {colors.map((c, index) => (
@@ -129,17 +137,11 @@ function App() {
             ))}
           </select>
         </div>
-        <button type="submit" onClick={() => generateqrcode}>
+        <button type="submit" >
           Generate QR Code
         </button>
       </form>
-      <div className="qrcode">
-        <img
-          src="https://api.qrserver.com/v1/create-qr-code/?data=HelloWorld&amp;size=100x100"
-          alt="qr code generated"
-          aria-label="generated qr code"
-        />
-      </div>
+    {/* </div> */}
     </div>
   );
 }

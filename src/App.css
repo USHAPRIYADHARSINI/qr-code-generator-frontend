@@ -5,6 +5,13 @@
   justify-content: center;
   gap: 20px;
 }
+/* .fullbox{
+  padding :5px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+} */
+h1, .subtitle{
+  margin: 0;
+}
 .box{
   display: flex;
   flex-direction: row;
@@ -21,6 +28,12 @@
   border-style: none;
   padding: 5px;
   font-size: small;
+}
+.clsform{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 input{
   font-size: small;
@@ -41,6 +54,13 @@ button:active{
 }
 .qrcode{
   background-color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.qrcode > img{
+  padding :5px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 .opt{
   background-color: whitesmoke;
